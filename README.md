@@ -29,3 +29,53 @@ Distribuição Linux minimalista baseada em **Debian minimal** para inicializar 
 - Adicionar usuário `steamlink` e autologin no display manager.
 - Trocar placeholder `/usr/bin/steamlink` por pacote/binário definitivo.
 - Criar pipeline de imagem bootável (ISO/IMG).
+
+
+## UI personalizada (estilo SteamOS)
+
+Foi adicionada uma interface base inspirada no estilo visual do SteamOS em `ui/`:
+
+- `ui/index.html`: estrutura da home (sidebar, hero e cards de status).
+- `ui/steamos-like.css`: tema escuro com foco em uso com controle/TV.
+- `scripts/open-ui-preview.sh`: imprime o caminho `file://` para abrir preview local.
+
+Pré-visualizar:
+
+```bash
+./scripts/open-ui-preview.sh
+```
+
+
+## Build bootável (Debian minimal + usuário + autologin)
+
+Script novo para gerar rootfs mais completo:
+
+```bash
+./scripts/bootstrap-rootfs.sh rootfs bookworm http://deb.debian.org/debian
+```
+
+Esse script faz:
+- `debootstrap` do Debian minimal (minbase);
+- instala `launch-steamlink.sh` e `steamlink.service` dentro do rootfs;
+- cria automaticamente usuário `steamlink`;
+- configura autologin no TTY1;
+- habilita `steamlink.service` no systemd do rootfs.
+
+
+## Gerar ISO de instalação (protótipo)
+
+Depois de gerar o rootfs tarball, você já pode empacotar uma ISO:
+
+```bash
+./scripts/build-image.sh rootfs build
+./scripts/build-iso.sh build/steamlinkos-rootfs.tar.gz build/iso-staging build/steamlinkos-installer.iso
+```
+
+O que já entrega:
+- arquivo `.iso` pronto para gravar em USB;
+- estrutura `/live/rootfs.tar.gz` dentro da ISO;
+- menu GRUB UEFI inicial (`SteamLinkOS Installer (Prototype)`).
+
+Próximo passo (que posso implementar em seguida):
+- adicionar kernel + initramfs live;
+- iniciar um instalador automático que extrai `rootfs.tar.gz` para disco alvo.
