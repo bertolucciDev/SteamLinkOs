@@ -68,7 +68,7 @@ Depois de gerar o rootfs tarball, você já pode empacotar uma ISO:
 
 ```bash
 ./scripts/build-image.sh rootfs build
-./scripts/build-iso.sh build/steamlinkos-rootfs.tar.gz build/iso-staging build/steamlinkos-installer.iso
+./scripts/build-iso.sh build/steamlinkos-rootfs.tar.gz rootfs/boot/vmlinuz rootfs/boot/initrd.img build/iso-staging build/steamlinkos-installer.iso
 ```
 
 O que já entrega:
@@ -79,3 +79,52 @@ O que já entrega:
 Próximo passo (que posso implementar em seguida):
 - adicionar kernel + initramfs live;
 - iniciar um instalador automático que extrai `rootfs.tar.gz` para disco alvo.
+
+
+## Kernel + initramfs live + instalador automático
+
+Implementado no fluxo de ISO:
+- `scripts/build-iso.sh` agora inclui kernel (`vmlinuz`) e initramfs (`initrd.img`) em `/live/` dentro da ISO.
+- `scripts/auto-install.sh` é incluído na mídia como instalador automático de disco (particiona, extrai rootfs, instala GRUB).
+- `iso/boot/grub/grub.cfg` agora inicia em modo live com kernel+initramfs.
+
+Exemplo:
+
+```bash
+./scripts/build-iso.sh   build/steamlinkos-rootfs.tar.gz   rootfs/boot/vmlinuz   rootfs/boot/initrd.img   build/iso-staging   build/steamlinkos-installer.iso
+```
+
+Após boot da mídia live, rode o instalador automático:
+
+```bash
+sudo /run/live/medium/live/auto-install.sh /dev/sda /run/live/medium/live/rootfs.tar.gz
+```
+
+
+## Produção: Steam Link completo (Bookworm minimal)
+
+Provisionar stack completa no rootfs:
+
+```bash
+./scripts/bootstrap-rootfs.sh rootfs bookworm http://deb.debian.org/debian
+./scripts/install-steamlink.sh rootfs bookworm
+```
+
+Arquivos principais criados/configurados:
+- `scripts/install-steamlink.sh`: ativa contrib/non-free, multiarch i386, instala dependências gráficas/áudio/input, VAAPI e Steam Link.
+- `/etc/sway/steamlink-kiosk.conf`: sessão Wayland kiosk sem keybinds de saída comuns.
+- `/etc/systemd/system/steamlink.service`: inicia sessão sway+Steam Link como usuário `steamlink`, com restart automático.
+- `/etc/systemd/system/getty@tty1.service.d/override.conf`: autologin no TTY1.
+- `/usr/local/bin/steamlink-kiosk-launch.sh`: valida VAAPI com `vainfo` e faz fallback de software quando necessário.
+
+
+## Alternativa para VM: ISO híbrida (BIOS + UEFI)
+
+Se a ISO UEFI falhar no VirtualBox, gere a versão híbrida:
+
+```bash
+./scripts/build-image.sh rootfs build
+./scripts/build-iso-hybrid.sh build/steamlinkos-rootfs.tar.gz rootfs/boot/vmlinuz rootfs/boot/initrd.img build/iso-hybrid-staging build/steamlinkos-installer-hybrid.iso
+```
+
+Essa abordagem usa `grub-mkrescue` e normalmente é mais compatível com VMs em modo Legacy BIOS e UEFI.
