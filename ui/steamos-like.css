@@ -1,0 +1,108 @@
+:root {
+  --bg-0: #0a1525;
+  --bg-1: #0f2238;
+  --bg-2: #132d47;
+  --text: #eaf3ff;
+  --muted: #9fb5cb;
+  --accent: #2ca6ff;
+  --accent-2: #4c7dff;
+  --border: rgba(190, 222, 255, 0.18);
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: Inter, Segoe UI, Roboto, sans-serif;
+  color: var(--text);
+  background: radial-gradient(circle at 20% 20%, #1b3555 0%, var(--bg-0) 40%, #070d16 100%);
+}
+
+.app-shell {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  min-height: 100vh;
+}
+
+.sidebar {
+  border-right: 1px solid var(--border);
+  background: linear-gradient(180deg, rgba(19,45,71,.9), rgba(10,21,37,.9));
+  padding: 24px 16px;
+}
+
+.brand {
+  font-weight: 700;
+  letter-spacing: .4px;
+  margin-bottom: 20px;
+}
+
+.nav-item {
+  width: 100%;
+  text-align: left;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  padding: 12px 14px;
+  margin-bottom: 6px;
+  border-radius: 12px;
+  font-size: 15px;
+}
+
+.nav-item.active,
+.nav-item:hover {
+  color: var(--text);
+  background: linear-gradient(90deg, rgba(44,166,255,.25), rgba(76,125,255,.14));
+}
+
+.content { padding: 26px; }
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.title { font-size: 24px; font-weight: 600; }
+.status { color: var(--muted); }
+
+.hero-card {
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 24px;
+  background: linear-gradient(160deg, rgba(14,34,56,.92), rgba(19,45,71,.7));
+  box-shadow: 0 16px 40px rgba(0,0,0,.35);
+}
+
+.eyebrow { color: #8fc9ff; text-transform: uppercase; font-size: 12px; letter-spacing: .12em; }
+h1 { margin: 8px 0; }
+.desc { color: var(--muted); }
+
+.actions { display: flex; gap: 10px; margin-top: 14px; }
+.btn {
+  border: 0;
+  border-radius: 999px;
+  padding: 10px 16px;
+  font-weight: 600;
+}
+.btn.primary { color: #001427; background: linear-gradient(90deg, var(--accent), #7dc6ff); }
+.btn.secondary {
+  color: var(--text);
+  background: rgba(255,255,255,.06);
+  border: 1px solid var(--border);
+}
+
+.tiles {
+  margin-top: 18px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(140px, 1fr));
+  gap: 12px;
+}
+
+.tile {
+  border: 1px solid var(--border);
+  background: rgba(18,38,60,.65);
+  border-radius: 14px;
+  padding: 14px;
+}
+.tile h3 { margin: 0 0 6px; color: var(--muted); font-size: 14px; }
+.tile p { margin: 0; font-size: 20px; font-weight: 700; }

@@ -1,0 +1,15 @@
+[Unit]
+Description=Steam Link kiosk session
+After=network-online.target graphical.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+EnvironmentFile=-/etc/steamlinkos/config.env
+ExecStart=/usr/local/bin/launch-steamlink.sh
+Restart=always
+RestartSec=2
+User=steamlink
+
+[Install]
+WantedBy=graphical.target
