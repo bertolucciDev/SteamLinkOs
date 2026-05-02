@@ -116,3 +116,15 @@ Arquivos principais criados/configurados:
 - `/etc/systemd/system/steamlink.service`: inicia sessão sway+Steam Link como usuário `steamlink`, com restart automático.
 - `/etc/systemd/system/getty@tty1.service.d/override.conf`: autologin no TTY1.
 - `/usr/local/bin/steamlink-kiosk-launch.sh`: valida VAAPI com `vainfo` e faz fallback de software quando necessário.
+
+
+## Alternativa para VM: ISO híbrida (BIOS + UEFI)
+
+Se a ISO UEFI falhar no VirtualBox, gere a versão híbrida:
+
+```bash
+./scripts/build-image.sh rootfs build
+./scripts/build-iso-hybrid.sh build/steamlinkos-rootfs.tar.gz rootfs/boot/vmlinuz rootfs/boot/initrd.img build/iso-hybrid-staging build/steamlinkos-installer-hybrid.iso
+```
+
+Essa abordagem usa `grub-mkrescue` e normalmente é mais compatível com VMs em modo Legacy BIOS e UEFI.
