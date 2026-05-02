@@ -17,8 +17,33 @@ require_cmd() {
 require_cmd grub-mkrescue
 require_cmd xorriso
 
+
+resolve_if_symlink_missing() {
+  local expected="$1" pattern="$2"
+  if [[ ! -f "$expected" ]]; then
+    local detected
+    detected="$(ls -1 $pattern 2>/dev/null | head -n1 || true)"
+    if [[ -n "$detected" ]]; then
+      echo "$detected"
+      return 0
+    fi
+  fi
+  echo "$expected"
+}
+
+# Auto-detect kernel/initrd if not explicitly provided.
+if [[ -z "$KERNEL_IMAGE" ]]; then
+  KERNEL_IMAGE="$(ls -1 rootfs/boot/vmlinuz* 2>/dev/null | head -n1 || true)"
+fi
+if [[ -z "$INITRD_IMAGE" ]]; then
+  INITRD_IMAGE="$(ls -1 rootfs/boot/initrd.img* 2>/dev/null | head -n1 || true)"
+fi
+
+KERNEL_IMAGE="$(resolve_if_symlink_missing "$KERNEL_IMAGE" "rootfs/boot/vmlinuz*")"
+INITRD_IMAGE="$(resolve_if_symlink_missing "$INITRD_IMAGE" "rootfs/boot/initrd.img*")"
+
 for f in "$ROOTFS_TAR" "$KERNEL_IMAGE" "$INITRD_IMAGE"; do
-  [[ -f "$f" ]] || { echo "[erro] arquivo não encontrado: $f" >&2; exit 1; }
+  [[ -f "$f" ]] || { echo "[erro] arquivo não encontrado: $f" >&2; echo "[dica] rode ./scripts/bootstrap-rootfs.sh para gerar kernel/initrd no rootfs" >&2; exit 1; }
 done
 
 rm -rf "$ISO_STAGING"

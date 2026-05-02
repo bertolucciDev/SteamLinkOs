@@ -128,3 +128,15 @@ Se a ISO UEFI falhar no VirtualBox, gere a versão híbrida:
 ```
 
 Essa abordagem usa `grub-mkrescue` e normalmente é mais compatível com VMs em modo Legacy BIOS e UEFI.
+
+
+> Dica: `build-iso-hybrid.sh` faz auto-detect de kernel/initrd em `rootfs/boot/vmlinuz*` e `rootfs/boot/initrd.img*` se você não passar os caminhos manualmente.
+
+
+Se aparecer erro de `vmlinuz`/`initrd.img` ausente, rode novamente:
+
+```bash
+./scripts/bootstrap-rootfs.sh rootfs bookworm http://deb.debian.org/debian
+```
+
+Esse passo instala kernel Debian (`linux-image-amd64`) e gera initramfs no `rootfs/boot`.

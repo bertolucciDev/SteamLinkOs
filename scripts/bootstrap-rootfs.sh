@@ -35,6 +35,9 @@ apt-get update
 apt-get install -y --no-install-recommends \
   systemd-sysv \
   sudo \
+  linux-image-amd64 \
+  initramfs-tools \
+  grub-efi-amd64-bin \
   xorg \
   openbox \
   lightdm
