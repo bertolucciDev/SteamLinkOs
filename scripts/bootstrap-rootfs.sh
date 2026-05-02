@@ -60,3 +60,9 @@ chroot "$ROOTFS_DIR" /tmp/steamlinkos-chroot-setup.sh
 rm -f "$ROOTFS_DIR/tmp/steamlinkos-chroot-setup.sh"
 
 echo "[ok] rootfs bootável inicial pronto em: $ROOTFS_DIR"
+
+
+# Optional full Steam Link stack provisioning
+if [[ -x scripts/install-steamlink.sh ]]; then
+  scripts/install-steamlink.sh "$ROOTFS_DIR" "$DEBIAN_RELEASE"
+fi

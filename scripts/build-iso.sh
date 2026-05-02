@@ -2,8 +2,10 @@
 set -euo pipefail
 
 ROOTFS_TAR="${1:-build/steamlinkos-rootfs.tar.gz}"
-ISO_STAGING="${2:-build/iso-staging}"
-ISO_OUTPUT="${3:-build/steamlinkos-installer.iso}"
+KERNEL_IMAGE="${2:-rootfs/boot/vmlinuz}"
+INITRD_IMAGE="${3:-rootfs/boot/initrd.img}"
+ISO_STAGING="${4:-build/iso-staging}"
+ISO_OUTPUT="${5:-build/steamlinkos-installer.iso}"
 
 require_cmd() {
   command -v "$1" >/dev/null 2>&1 || {
@@ -14,12 +16,21 @@ require_cmd() {
 
 require_cmd xorriso
 require_cmd grub-mkstandalone
-require_cmd mformat
-require_cmd mcopy
 
 if [[ ! -f "$ROOTFS_TAR" ]]; then
   echo "[erro] rootfs tarball não encontrado: $ROOTFS_TAR" >&2
   echo "[dica] execute antes: ./scripts/build-image.sh rootfs build" >&2
+  exit 1
+fi
+
+
+if [[ ! -f "$KERNEL_IMAGE" ]]; then
+  echo "[erro] kernel não encontrado: $KERNEL_IMAGE" >&2
+  exit 1
+fi
+
+if [[ ! -f "$INITRD_IMAGE" ]]; then
+  echo "[erro] initramfs não encontrado: $INITRD_IMAGE" >&2
   exit 1
 fi
 
@@ -28,6 +39,10 @@ mkdir -p "$ISO_STAGING/boot/grub" "$ISO_STAGING/live"
 
 cp iso/boot/grub/grub.cfg "$ISO_STAGING/boot/grub/grub.cfg"
 cp "$ROOTFS_TAR" "$ISO_STAGING/live/rootfs.tar.gz"
+cp "$KERNEL_IMAGE" "$ISO_STAGING/live/vmlinuz"
+cp "$INITRD_IMAGE" "$ISO_STAGING/live/initrd.img"
+cp scripts/auto-install.sh "$ISO_STAGING/live/auto-install.sh"
+chmod +x "$ISO_STAGING/live/auto-install.sh"
 
 # Build GRUB EFI image
 mkdir -p "$ISO_STAGING/EFI/BOOT"
@@ -52,4 +67,4 @@ xorriso -as mkisofs \
   "$ISO_STAGING"
 
 echo "[ok] ISO gerada: $ISO_OUTPUT"
-echo "[info] próxima etapa: adicionar kernel+initramfs live e instalador automático"
+echo "[info] ISO live pronta com kernel+initramfs e script de instalação em /live/auto-install.sh"
